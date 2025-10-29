@@ -1,0 +1,33 @@
+@page "/pantry"
+
+<PageTitle>Pantry</PageTitle>
+
+<MudText Typo="Typo.h3" Class="mb-3">Pantry</MudText>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@CreateIngredient" Class="mb-3">
+    <MudIcon Icon="@Icons.Material.Filled.Add"/>
+    Create Ingredient
+</MudButton>
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+}
+else
+{
+    <MudTable Items="@GetIngredientResponses"
+              Hover="true"
+              Breakpoint="Breakpoint.Sm"
+              Loading="@(GetIngredientResponses is null)"
+              LoadingProgressColor="Color.Primary">
+        <NoRecordsContent>
+            No ingredients found.
+        </NoRecordsContent>
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+        </RowTemplate>
+    </MudTable>
+}

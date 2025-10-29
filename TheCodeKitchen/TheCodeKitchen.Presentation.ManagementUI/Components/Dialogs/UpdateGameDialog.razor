@@ -1,0 +1,69 @@
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h4">Update Game</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+        }
+        else if (Model == null)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+        }
+        else
+        {
+            <MudForm Model="@Model" Validation="@validator.ValidateValue" @ref="Form">
+                <MudTimePicker Label="Time Per Moment"
+                               @bind-Time="@Model.TimePerMoment"
+                               For="@(() => Model.TimePerMoment)"
+                               Variant="Variant.Outlined"
+                               Class="mb-1"/>
+                <MudTextField Label="Speed Modifier"
+                              InputType="InputType.Number"
+                              @bind-Value="Model.SpeedModifier"
+                              For="@(() => Model.SpeedModifier)"
+                              Variant="Variant.Outlined"
+                              Class="mb-1"/>
+                <MudTimePicker Label="Minimum Time Between Orders"
+                               @bind-Time="@Model.MinimumTimeBetweenOrders"
+                               For="@(() => Model.MinimumTimeBetweenOrders)"
+                               Variant="Variant.Outlined"
+                               Class="mb-1"/>
+                <MudTimePicker Label="Maximum Time Between Orders"
+                               @bind-Time="@Model.MaximumTimeBetweenOrders"
+                               For="@(() => Model.MaximumTimeBetweenOrders)"
+                               Variant="Variant.Outlined"
+                               Class="mb-1"/>
+                <MudTextField Label="Minimum Items Per Order"
+                              InputType="InputType.Number"
+                              @bind-Value="Model.MinimumItemsPerOrder"
+                              For="@(() => Model.MinimumItemsPerOrder)"
+                              Variant="Variant.Outlined"
+                              Class="mb-1"/>
+                <MudTextField Label="Maximum Items Per Order"
+                              InputType="InputType.Number"
+                              @bind-Value="Model.MaximumItemsPerOrder"
+                              For="@(() => Model.MaximumItemsPerOrder)"
+                              Variant="Variant.Outlined"
+                              Class="mb-1"/>
+                <MudTextField Label="Order Speed Modifier"
+                              InputType="InputType.Number"
+                              @bind-Value="Model.OrderSpeedModifier"
+                              For="@(() => Model.OrderSpeedModifier)"
+                              Variant="Variant.Outlined"
+                              Class="mb-1"/>
+                <MudTextField Label="Temperature"
+                              InputType="InputType.Number"
+                              @bind-Value="Model.Temperature"
+                              For="@(() => Model.Temperature)"
+                              Variant="Variant.Outlined"
+                              Class="mb-1"/>
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled" Disabled="@(Updating || Model == null)">OK</MudButton>
+    </DialogActions>
+</MudDialog>

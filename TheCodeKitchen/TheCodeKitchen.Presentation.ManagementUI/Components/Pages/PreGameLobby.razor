@@ -1,0 +1,77 @@
+@page "/games/{gameId:guid}/pre-game-lobby"
+
+<PageTitle>Pre-game Lobby</PageTitle>
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+}
+else if (GetGameResponse is null)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+}
+else
+{
+    <MudText Typo="Typo.h3" Class="mb-3">@GetGameResponse.Name</MudText>
+
+    if (GetGameResponse.Started is null)
+    {
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@CreateKitchen" Class="mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.Add"/>
+            Create Kitchen
+        </MudButton>
+    }
+
+    <MudTable Items="@KitchenRecords"
+              Hover="true"
+              Breakpoint="Breakpoint.Sm"
+              Loading="@(KitchenRecords is null)"
+              LoadingProgressColor="Color.Primary"
+              Class="mb-3">
+        <NoRecordsContent>
+            No kitchens found.
+        </NoRecordsContent>
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Code</MudTh>
+            <MudTh>Cooks</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Code">@context.Code</MudTd>
+            @if (CookRecordsPerKitchen is not null)
+            {
+                <MudTd DataLabel="Cooks">
+                    @string.Join(", ", CookRecordsPerKitchen[context.Id].Select(c => c.Username))
+                </MudTd>
+            }
+            else
+            {
+                <MudTd DataLabel="Cooks"/>
+            }
+        </RowTemplate>
+    </MudTable>
+
+    if (GetGameResponse.Started is null)
+    {
+        <MudButton OnClick="@StartGame" Disabled="Busy" Variant="Variant.Filled" Color="Color.Primary"  Class="mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.PlayArrow"/>
+            Start Game
+        </MudButton>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Info">The game has already started, go
+            <MudLink Href="@($"/games/{GameId}")" Color="Color.Info">here</MudLink>
+            !
+        </MudAlert>
+    }
+}
+    
+    
+    
+
+
+
+
+

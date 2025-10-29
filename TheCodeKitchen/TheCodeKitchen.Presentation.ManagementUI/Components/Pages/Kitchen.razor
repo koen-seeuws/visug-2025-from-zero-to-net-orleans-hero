@@ -1,0 +1,17 @@
+@page "/kitchen/{kitchenId:guid}"
+@using TheCodeKitchen.Presentation.ManagementUI.Components.Shared
+
+<PageTitle>Game</PageTitle>
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+}
+else if (KitchenViewModel is null)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+}
+else
+{
+    <KitchenComponent Kitchen="@KitchenViewModel"/>
+}

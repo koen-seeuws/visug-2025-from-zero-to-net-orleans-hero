@@ -1,0 +1,11 @@
+﻿<MudNavMenu>
+    <MudNavLink Href="/games" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VideogameAsset">Games</MudNavLink>
+    <MudNavLink Href="/pantry" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ShoppingBasket">Pantry
+    </MudNavLink>
+    <MudNavLink Href="/recipes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.RestaurantMenu">Recipes
+    </MudNavLink>
+    @if (!string.IsNullOrWhiteSpace(OrleansDashBoardUrl))
+    {
+        <MudNavLink Href="@OrleansDashBoardUrl" Target="_blank" Icon="@Icons.Material.Filled.Grain">Orleans</MudNavLink>
+    }
+</MudNavMenu>

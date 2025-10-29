@@ -1,0 +1,41 @@
+﻿@page "/"
+@page "/games"
+@using TheCodeKitchen.Presentation.ManagementUI.Models.TableRecordModels
+
+<PageTitle>Games</PageTitle>
+
+<MudText Typo="Typo.h3" Class="mb-3">Games</MudText>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@CreateGame" Class="mb-3">
+    <MudIcon Icon="@Icons.Material.Filled.Add"/> Create Game
+</MudButton>
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+}
+else
+{
+    <MudTable Items="@GameRecords"
+              Hover="true"
+              Breakpoint="Breakpoint.Sm"
+              Loading="@(GameRecords is null)"
+              LoadingProgressColor="Color.Primary"
+              OnRowClick="@((TableRowClickEventArgs<GameTableRecordModel> e) => NavigateToGame(e.Item!.Id, e.Item.Started is not null))">
+        <NoRecordsContent>
+            No games found.
+        </NoRecordsContent>
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Started</MudTh>
+            <MudTh>Paused</MudTh>
+            <MudTh>Speed modifier</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Started">@clientTimeService.GetLocalDateTime(context.Started)</MudTd>
+            <MudTd DataLabel="Paused">@context.Paused</MudTd>
+            <MudTd DataLabel="Speed modifier">@context.SpeedModifier</MudTd>
+        </RowTemplate>
+    </MudTable>
+}

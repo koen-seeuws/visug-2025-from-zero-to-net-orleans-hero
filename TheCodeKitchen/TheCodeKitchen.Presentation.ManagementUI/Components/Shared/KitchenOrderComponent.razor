@@ -1,0 +1,30 @@
+<MudCard>
+    <MudCardContent>
+        <MudText Typo="Typo.h6">Order @KitchenOrder.Number</MudText>
+        <div class="d-flex flex-grow-1 gap-3">
+            <div class="flex-grow-1">
+                <MudText Typo="Typo.subtitle1">Requested</MudText>
+                <ul class="ms-3">
+                    @foreach (var requestedFood in KitchenOrder.RequestedFoods)
+                    {
+                        <li>
+                            <MudText Typo="Typo.body1">@requestedFood</MudText>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <MudDivider Vertical="true" FlexItem="true"/>
+            <div class="flex-grow-1">
+                <MudText Typo="Typo.subtitle1">Delivered</MudText>
+                <ul class="ms-3">
+                    @foreach (var deliveredFood in KitchenOrder.DeliveredFoods)
+                    {
+                        <li>
+                            <MudText Typo="Typo.body1">@deliveredFood</MudText>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </MudCardContent>
+</MudCard>

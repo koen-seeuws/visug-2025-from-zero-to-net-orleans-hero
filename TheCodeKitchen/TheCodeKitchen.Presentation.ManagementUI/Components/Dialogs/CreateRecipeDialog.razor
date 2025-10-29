@@ -1,0 +1,140 @@
+@using TheCodeKitchen.Application.Constants
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h4">Create Recipe</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+        }
+        else if (Ingredients is null || Recipes is null)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+        }
+        else
+        {
+            <MudForm Model="@Model" Validation="@validator.ValidateValue" @ref="Form">
+                <MudTextField Label="Name"
+                              @bind-Value="Model.Name"
+                              For="@(() => Model.Name)"
+                              Required
+                              Variant="Variant.Outlined"
+                              Class="mb-3"/>
+                <MudDivider Class="mb-3"/>
+                @foreach (var recipeStep in Model.Steps)
+                {
+                    <div class="d-flex align-center gap-3 mb-3">
+                        <div class="flex-grow-1">
+                            <MudSelect Label="Equipment Type"
+                                       @bind-Value="@recipeStep.EquipmentType"
+                                       For="@(() => recipeStep.EquipmentType)"
+                                       Required
+                                       Variant="Variant.Outlined"
+                                       Class="mb-1">
+                                @foreach (var equipmentType in EquipmentType.Steppable)
+                                {
+                                    <MudSelectItem Value="@equipmentType">@equipmentType</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudTimePicker Label="Time"
+                                           @bind-Time="@recipeStep.Time"
+                                           For="@(() => recipeStep.Time)"
+                                           Required
+                                           Variant="Variant.Outlined"
+                                           Class="mb-3"/>
+                        </div>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Color="Color.Primary"
+                                       Variant="Variant.Filled"
+                                       OnClick="@(() => RemoveStep(Model.Steps, recipeStep))"/>
+                    </div>
+                    <MudDivider Class="mb-3"/>
+                }
+                <MudButton Color="Color.Primary"
+                           Variant="Variant.Filled"
+                           OnClick="@(() => AddStep(Model.Steps))"
+                           Class="mb-3">
+                    Add Step
+                </MudButton>
+                <MudText Typo="Typo.h5" Class="mb-1">Ingredients</MudText>
+                @foreach (var (recipeIngredient, number) in Model.Ingredients.Select((recipeIngredient, index) => (recipeIngredient, index + 1)))
+                {
+                    <MudText Typo="Typo.h6" Class="">Ingredient @number</MudText>
+                    <div class="d-flex justify-space-between align-center gap-3 mb-3">
+                        <MudSelect Label="Ingredient"
+                                   Value="@recipeIngredient.Name"
+                                   ValueChanged="@((string value) => OnIngredientNameChanged(recipeIngredient, value))"
+                                   For="@(() => recipeIngredient.Name)"
+                                   Required
+                                   Variant="Variant.Outlined"
+                                   Class="flex-grow-1">
+                            @foreach (var ingredient in AllIngredients)
+                            {
+                                <MudSelectItem Value="@ingredient">@ingredient</MudSelectItem>
+                            }
+                        </MudSelect>
+                        @if (Model.Ingredients.Count > 2)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                           Color="Color.Primary"
+                                           Variant="Variant.Filled"
+                                           OnClick="@(() => RemoveIngredient(recipeIngredient))"/>
+                        }
+
+                    </div>
+                    <MudDivider Class="mb-3"/>
+                    @if (Ingredients.Select(i => i.Name).Contains(recipeIngredient.Name, StringComparer.Ordinal))
+                    {
+                        foreach (var ingredientStep in recipeIngredient.Steps)
+                        {
+                            <div class="d-flex align-center gap-3 mb-3">
+                                <div class="flex-grow-1">
+                                    <MudSelect Label="Equipment Type"
+                                               @bind-Value="@ingredientStep.EquipmentType"
+                                               For="@(() => ingredientStep.EquipmentType)"
+                                               Required
+                                               Variant="Variant.Outlined"
+                                               Class="mb-1">
+                                        @foreach (var equipmentType in EquipmentType.Steppable)
+                                        {
+                                            <MudSelectItem Value="@equipmentType">@equipmentType</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                    <MudTimePicker Label="Time"
+                                                   @bind-Time="@ingredientStep.Time"
+                                                   For="@(() => ingredientStep.Time)"
+                                                   Required
+                                                   Variant="Variant.Outlined"/>
+                                </div>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                               Color="Color.Primary"
+                                               Variant="Variant.Filled"
+                                               OnClick="@(() => RemoveStep(recipeIngredient.Steps, ingredientStep))"/>
+                            </div>
+                            <MudDivider Class="mb-3"/>
+                        }
+
+                        <MudButton Color="Color.Primary"
+                                   Variant="Variant.Filled"
+                                   OnClick="@(() => AddStep(recipeIngredient.Steps))"
+                                   Class="mb-3">
+                            Add Step
+                        </MudButton>
+                    }
+
+                    <MudDivider Class="mb-3"/>
+                }
+                <MudButton Color="Color.Primary"
+                           Variant="Variant.Filled"
+                           OnClick="AddIngredient">
+                    Add Ingredient
+                </MudButton>
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled" Disabled="Creating">OK</MudButton>
+    </DialogActions>
+</MudDialog>

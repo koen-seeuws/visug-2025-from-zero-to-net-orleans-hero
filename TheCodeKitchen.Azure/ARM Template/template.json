@@ -1,0 +1,1257 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerapps_ca_tck_cook_api_name": {
+            "defaultValue": "ca-tck-cook-api",
+            "type": "String"
+        },
+        "containerapps_ca_tck_orleans_silo_name": {
+            "defaultValue": "ca-tck-orleans-silo",
+            "type": "String"
+        },
+        "containerapps_ca_tck_management_ui_name": {
+            "defaultValue": "ca-tck-management-ui",
+            "type": "String"
+        },
+        "containerapps_ca_tck_management_api_name": {
+            "defaultValue": "ca-tck-management-api",
+            "type": "String"
+        },
+        "containerapps_ca_tck_orleans_scaler_name": {
+            "defaultValue": "ca-tck-orleans-scaler",
+            "type": "String"
+        },
+        "storageAccounts_stthecodekitchen_name": {
+            "defaultValue": "stthecodekitchen",
+            "type": "String"
+        },
+        "namespaces_evhns_the_code_kitchen_name": {
+            "defaultValue": "evhns-the-code-kitchen",
+            "type": "String"
+        },
+        "managedEnvironments_cae_the_code_kitchen_name": {
+            "defaultValue": "cae-the-code-kitchen",
+            "type": "String"
+        },
+        "SignalR_sigr_the_code_kitchen_name": {
+            "defaultValue": "sigr-the-code-kitchen",
+            "type": "String"
+        },
+        "registries_crthecodekitchen_name": {
+            "defaultValue": "crthecodekitchen",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.App/managedEnvironments",
+            "apiVersion": "2025-02-02-preview",
+            "name": "[parameters('managedEnvironments_cae_the_code_kitchen_name')]",
+            "location": "West Europe",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "appLogsConfiguration": {
+                    "destination": "log-analytics",
+                    "logAnalyticsConfiguration": {
+                        "customerId": "a1f1c37a-6e2b-4b78-b846-4f15ebcfcae6",
+                        "dynamicJsonColumns": false
+                    }
+                },
+                "zoneRedundant": false,
+                "kedaConfiguration": {},
+                "daprConfiguration": {},
+                "customDomainConfiguration": {},
+                "workloadProfiles": [
+                    {
+                        "workloadProfileType": "Consumption",
+                        "name": "Consumption",
+                        "enableFips": false
+                    }
+                ],
+                "peerAuthentication": {
+                    "mtls": {
+                        "enabled": false
+                    }
+                },
+                "peerTrafficConfiguration": {
+                    "encryption": {
+                        "enabled": false
+                    }
+                },
+                "publicNetworkAccess": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.ContainerRegistry/registries",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[parameters('registries_crthecodekitchen_name')]",
+            "location": "westeurope",
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic"
+            },
+            "properties": {
+                "adminUserEnabled": true,
+                "policies": {
+                    "quarantinePolicy": {
+                        "status": "disabled"
+                    },
+                    "trustPolicy": {
+                        "type": "Notary",
+                        "status": "disabled"
+                    },
+                    "retentionPolicy": {
+                        "days": 7,
+                        "status": "disabled"
+                    },
+                    "exportPolicy": {
+                        "status": "enabled"
+                    },
+                    "azureADAuthenticationAsArmPolicy": {
+                        "status": "enabled"
+                    },
+                    "softDeletePolicy": {
+                        "retentionDays": 7,
+                        "status": "disabled"
+                    }
+                },
+                "encryption": {
+                    "status": "disabled"
+                },
+                "dataEndpointEnabled": false,
+                "publicNetworkAccess": "Enabled",
+                "networkRuleBypassOptions": "AzureServices",
+                "networkRuleBypassAllowedForTasks": false,
+                "zoneRedundancy": "Disabled",
+                "anonymousPullEnabled": false,
+                "metadataSearch": "Disabled",
+                "roleAssignmentMode": "LegacyRegistryPermissions",
+                "autoGeneratedDomainNameLabelScope": "Unsecure"
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[parameters('namespaces_evhns_the_code_kitchen_name')]",
+            "location": "westeurope",
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 1
+            },
+            "properties": {
+                "geoDataReplication": {
+                    "maxReplicationLagDurationInSeconds": 0,
+                    "locations": [
+                        {
+                            "locationName": "westeurope",
+                            "roleType": "Primary"
+                        }
+                    ]
+                },
+                "minimumTlsVersion": "1.2",
+                "publicNetworkAccess": "Enabled",
+                "disableLocalAuth": false,
+                "zoneRedundant": true,
+                "isAutoInflateEnabled": false,
+                "maximumThroughputUnits": 0,
+                "kafkaEnabled": true
+            }
+        },
+        {
+            "type": "Microsoft.SignalRService/SignalR",
+            "apiVersion": "2025-01-01-preview",
+            "name": "[parameters('SignalR_sigr_the_code_kitchen_name')]",
+            "location": "westeurope",
+            "sku": {
+                "name": "Free_F1",
+                "tier": "Free",
+                "size": "F1",
+                "capacity": 1
+            },
+            "kind": "SignalR",
+            "properties": {
+                "tls": {
+                    "clientCertEnabled": false
+                },
+                "features": [
+                    {
+                        "flag": "ServiceMode",
+                        "value": "Default",
+                        "properties": {}
+                    },
+                    {
+                        "flag": "EnableConnectivityLogs",
+                        "value": "True",
+                        "properties": {}
+                    },
+                    {
+                        "flag": "EnableMessagingLogs",
+                        "value": "False",
+                        "properties": {}
+                    },
+                    {
+                        "flag": "EnableLiveTrace",
+                        "value": "False",
+                        "properties": {}
+                    }
+                ],
+                "liveTraceConfiguration": {
+                    "enabled": "true",
+                    "categories": [
+                        {
+                            "name": "ConnectivityLogs",
+                            "enabled": "true"
+                        },
+                        {
+                            "name": "MessagingLogs",
+                            "enabled": "false"
+                        },
+                        {
+                            "name": "HttpRequestLogs",
+                            "enabled": "false"
+                        }
+                    ]
+                },
+                "cors": {
+                    "allowedOrigins": [
+                        "*"
+                    ]
+                },
+                "serverless": {
+                    "connectionTimeoutInSeconds": 30,
+                    "keepAliveIntervalInSeconds": 15
+                },
+                "upstream": {},
+                "networkACLs": {
+                    "defaultAction": "Deny",
+                    "publicNetwork": {
+                        "allow": [
+                            "ServerConnection",
+                            "ClientConnection",
+                            "RESTAPI",
+                            "Trace"
+                        ]
+                    },
+                    "privateEndpoints": [],
+                    "ipRules": [
+                        {
+                            "value": "0.0.0.0/0",
+                            "action": "Allow"
+                        },
+                        {
+                            "value": "::/0",
+                            "action": "Allow"
+                        }
+                    ]
+                },
+                "applicationFirewall": {
+                    "clientConnectionCountRules": [],
+                    "clientTrafficControlRules": []
+                },
+                "publicNetworkAccess": "Enabled",
+                "disableLocalAuth": false,
+                "disableAadAuth": false,
+                "regionEndpointEnabled": "Enabled",
+                "resourceStopped": "false"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2025-01-01",
+            "name": "[parameters('storageAccounts_stthecodekitchen_name')]",
+            "location": "westeurope",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "dnsEndpointType": "Standard",
+                "defaultToOAuthAuthentication": false,
+                "publicNetworkAccess": "Enabled",
+                "allowCrossTenantReplication": false,
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": true,
+                "largeFileSharesState": "Enabled",
+                "networkAcls": {
+                    "resourceAccessRules": [],
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "requireInfrastructureEncryption": false,
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.App/containerapps",
+            "apiVersion": "2025-02-02-preview",
+            "name": "[parameters('containerapps_ca_tck_cook_api_name')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]"
+            ],
+            "kind": "containerapps",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "environmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "workloadProfileName": "Consumption",
+                "configuration": {
+                    "secrets": [
+                        {
+                            "name": "connection-strings--event-hub-namespace"
+                        },
+                        {
+                            "name": "connections-strings--azure-signal-r"
+                        },
+                        {
+                            "name": "connection-strings--azure-storage"
+                        }
+                    ],
+                    "activeRevisionsMode": "Single",
+                    "ingress": {
+                        "external": true,
+                        "targetPort": 8080,
+                        "exposedPort": 0,
+                        "transport": "Auto",
+                        "traffic": [
+                            {
+                                "weight": 100,
+                                "latestRevision": true
+                            }
+                        ],
+                        "allowInsecure": false,
+                        "clientCertificateMode": "Ignore",
+                        "stickySessions": {
+                            "affinity": "none"
+                        }
+                    },
+                    "registries": [
+                        {
+                            "server": "crthecodekitchen.azurecr.io",
+                            "identity": "system-environment"
+                        }
+                    ],
+                    "identitySettings": [],
+                    "maxInactiveRevisions": 100
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "[concat('crthecodekitchen.azurecr.io/', parameters('containerapps_ca_tck_cook_api_name'), ':138')]",
+                            "imageType": "ContainerImage",
+                            "name": "[parameters('containerapps_ca_tck_cook_api_name')]",
+                            "env": [
+                                {
+                                    "name": "ConnectionStrings__AzureStorage",
+                                    "secretRef": "connection-strings--azure-storage"
+                                },
+                                {
+                                    "name": "ConnectionStrings__AzureSignalR",
+                                    "secretRef": "connections-strings--azure-signal-r"
+                                },
+                                {
+                                    "name": "ConnectionStrings__EventHubNamespace",
+                                    "secretRef": "connection-strings--event-hub-namespace"
+                                }
+                            ],
+                            "resources": {
+                                "cpu": 0.25,
+                                "memory": "0.5Gi"
+                            },
+                            "probes": [
+                                {
+                                    "type": "Liveness",
+                                    "httpGet": {
+                                        "path": "/health/live",
+                                        "port": 8080,
+                                        "scheme": "HTTP"
+                                    },
+                                    "periodSeconds": 10
+                                },
+                                {
+                                    "type": "Readiness",
+                                    "httpGet": {
+                                        "path": "/health/ready",
+                                        "port": 8080,
+                                        "scheme": "HTTP"
+                                    },
+                                    "periodSeconds": 10
+                                }
+                            ]
+                        }
+                    ],
+                    "scale": {
+                        "minReplicas": 0,
+                        "maxReplicas": 5,
+                        "cooldownPeriod": 300,
+                        "pollingInterval": 30,
+                        "rules": [
+                            {
+                                "name": "cpu-scaler",
+                                "custom": {
+                                    "type": "cpu",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "memory-scaler",
+                                "custom": {
+                                    "type": "memory",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "http-scaler",
+                                "http": {
+                                    "metadata": {
+                                        "concurrentRequests": "15"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "volumes": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.App/containerapps",
+            "apiVersion": "2025-02-02-preview",
+            "name": "[parameters('containerapps_ca_tck_management_api_name')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]"
+            ],
+            "kind": "containerapps",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "environmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "workloadProfileName": "Consumption",
+                "configuration": {
+                    "secrets": [
+                        {
+                            "name": "connection-strings--event-hub-namespace"
+                        },
+                        {
+                            "name": "connection-strings--azure-signal-r"
+                        },
+                        {
+                            "name": "connection-strings--azure-storage"
+                        }
+                    ],
+                    "activeRevisionsMode": "Single",
+                    "ingress": {
+                        "external": true,
+                        "targetPort": 8080,
+                        "exposedPort": 0,
+                        "transport": "Auto",
+                        "traffic": [
+                            {
+                                "weight": 100,
+                                "latestRevision": true
+                            }
+                        ],
+                        "allowInsecure": false,
+                        "clientCertificateMode": "Ignore",
+                        "stickySessions": {
+                            "affinity": "none"
+                        }
+                    },
+                    "registries": [
+                        {
+                            "server": "crthecodekitchen.azurecr.io",
+                            "identity": "system-environment"
+                        }
+                    ],
+                    "identitySettings": [],
+                    "maxInactiveRevisions": 100
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "[concat('crthecodekitchen.azurecr.io/', parameters('containerapps_ca_tck_management_api_name'), ':138')]",
+                            "imageType": "ContainerImage",
+                            "name": "[parameters('containerapps_ca_tck_management_api_name')]",
+                            "env": [
+                                {
+                                    "name": "ConnectionStrings__AzureStorage",
+                                    "secretRef": "connection-strings--azure-storage"
+                                },
+                                {
+                                    "name": "ConnectionStrings__AzureSignalR",
+                                    "secretRef": "connection-strings--azure-signal-r"
+                                },
+                                {
+                                    "name": "ConnectionStrings__EventHubNamespace",
+                                    "secretRef": "connection-strings--event-hub-namespace"
+                                }
+                            ],
+                            "resources": {
+                                "cpu": 0.25,
+                                "memory": "0.5Gi"
+                            },
+                            "probes": [
+                                {
+                                    "type": "Liveness",
+                                    "httpGet": {
+                                        "path": "/health/live",
+                                        "port": 8080,
+                                        "scheme": "HTTP"
+                                    },
+                                    "periodSeconds": 10
+                                },
+                                {
+                                    "type": "Readiness",
+                                    "httpGet": {
+                                        "path": "/health/ready",
+                                        "port": 8080,
+                                        "scheme": "HTTP"
+                                    },
+                                    "periodSeconds": 10
+                                }
+                            ]
+                        }
+                    ],
+                    "scale": {
+                        "minReplicas": 0,
+                        "maxReplicas": 5,
+                        "cooldownPeriod": 300,
+                        "pollingInterval": 30,
+                        "rules": [
+                            {
+                                "name": "cpu-scaler",
+                                "custom": {
+                                    "type": "cpu",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "memory-scaler",
+                                "custom": {
+                                    "type": "memory",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "http-scaler",
+                                "http": {
+                                    "metadata": {
+                                        "concurrentRequests": "10"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "volumes": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.App/containerapps",
+            "apiVersion": "2025-02-02-preview",
+            "name": "[parameters('containerapps_ca_tck_management_ui_name')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]"
+            ],
+            "kind": "containerapps",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "environmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "workloadProfileName": "Consumption",
+                "configuration": {
+                    "secrets": [
+                        {
+                            "name": "connection-strings--azure-signal-r"
+                        },
+                        {
+                            "name": "connection-strings--azure-storage"
+                        },
+                        {
+                            "name": "connection-strings--event-hub-namespace"
+                        }
+                    ],
+                    "activeRevisionsMode": "Single",
+                    "ingress": {
+                        "external": true,
+                        "targetPort": 8080,
+                        "exposedPort": 0,
+                        "transport": "Auto",
+                        "traffic": [
+                            {
+                                "weight": 100,
+                                "latestRevision": true
+                            }
+                        ],
+                        "allowInsecure": false,
+                        "clientCertificateMode": "Ignore",
+                        "stickySessions": {
+                            "affinity": "none"
+                        }
+                    },
+                    "registries": [
+                        {
+                            "server": "crthecodekitchen.azurecr.io",
+                            "identity": "system-environment"
+                        }
+                    ],
+                    "identitySettings": [],
+                    "maxInactiveRevisions": 100
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "[concat('crthecodekitchen.azurecr.io/', parameters('containerapps_ca_tck_management_ui_name'), ':138')]",
+                            "imageType": "ContainerImage",
+                            "name": "[parameters('containerapps_ca_tck_management_ui_name')]",
+                            "env": [
+                                {
+                                    "name": "ConnectionStrings__AzureStorage",
+                                    "secretRef": "connection-strings--azure-storage"
+                                },
+                                {
+                                    "name": "ConnectionStrings__AzureSignalR",
+                                    "secretRef": "connection-strings--azure-signal-r"
+                                },
+                                {
+                                    "name": "ConnectionStrings__EventHubNamespace",
+                                    "secretRef": "connection-strings--event-hub-namespace"
+                                }
+                            ],
+                            "resources": {
+                                "cpu": 0.25,
+                                "memory": "0.5Gi"
+                            },
+                            "probes": [
+                                {
+                                    "type": "Liveness",
+                                    "httpGet": {
+                                        "path": "/health/live",
+                                        "port": 8080,
+                                        "scheme": "HTTP"
+                                    },
+                                    "periodSeconds": 10
+                                },
+                                {
+                                    "type": "Readiness",
+                                    "httpGet": {
+                                        "path": "/health/ready",
+                                        "port": 8080,
+                                        "scheme": "HTTP"
+                                    },
+                                    "periodSeconds": 10
+                                }
+                            ]
+                        }
+                    ],
+                    "scale": {
+                        "minReplicas": 0,
+                        "maxReplicas": 5,
+                        "cooldownPeriod": 300,
+                        "pollingInterval": 30,
+                        "rules": [
+                            {
+                                "name": "memory-scaler",
+                                "custom": {
+                                    "type": "memory",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "cpu-scaler",
+                                "custom": {
+                                    "type": "cpu",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "http-scaler",
+                                "http": {
+                                    "metadata": {
+                                        "concurrentRequests": "10"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "volumes": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.App/containerapps",
+            "apiVersion": "2025-02-02-preview",
+            "name": "[parameters('containerapps_ca_tck_orleans_scaler_name')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]"
+            ],
+            "kind": "containerapps",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "environmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "workloadProfileName": "Consumption",
+                "configuration": {
+                    "secrets": [
+                        {
+                            "name": "connection-strings--azure-storage"
+                        },
+                        {
+                            "name": "connection-strings--event-hub-namespace"
+                        }
+                    ],
+                    "activeRevisionsMode": "Single",
+                    "ingress": {
+                        "external": false,
+                        "targetPort": 8080,
+                        "exposedPort": 0,
+                        "transport": "Http2",
+                        "traffic": [
+                            {
+                                "weight": 100,
+                                "latestRevision": true
+                            }
+                        ],
+                        "allowInsecure": true,
+                        "clientCertificateMode": "Ignore",
+                        "stickySessions": {
+                            "affinity": "none"
+                        }
+                    },
+                    "registries": [
+                        {
+                            "server": "crthecodekitchen.azurecr.io",
+                            "identity": "system-environment"
+                        }
+                    ],
+                    "identitySettings": [],
+                    "runtime": {
+                        "dotnet": {
+                            "autoConfigureDataProtection": false
+                        }
+                    },
+                    "maxInactiveRevisions": 100
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "[concat('crthecodekitchen.azurecr.io/', parameters('containerapps_ca_tck_orleans_scaler_name'), ':138')]",
+                            "imageType": "ContainerImage",
+                            "name": "[parameters('containerapps_ca_tck_orleans_scaler_name')]",
+                            "env": [
+                                {
+                                    "name": "ConnectionStrings__EventHubNamespace",
+                                    "secretRef": "connection-strings--event-hub-namespace"
+                                },
+                                {
+                                    "name": "ConnectionStrings__AzureStorage",
+                                    "secretRef": "connection-strings--azure-storage"
+                                }
+                            ],
+                            "resources": {
+                                "cpu": 0.25,
+                                "memory": "0.5Gi"
+                            },
+                            "probes": []
+                        }
+                    ],
+                    "scale": {
+                        "minReplicas": 0,
+                        "maxReplicas": 2,
+                        "cooldownPeriod": 300,
+                        "pollingInterval": 30,
+                        "rules": [
+                            {
+                                "name": "cpu-scaler",
+                                "custom": {
+                                    "type": "cpu",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "memory-scaler",
+                                "custom": {
+                                    "type": "memory",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "http-scaler",
+                                "http": {
+                                    "metadata": {
+                                        "concurrentRequests": "30"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "volumes": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.App/containerapps",
+            "apiVersion": "2025-02-02-preview",
+            "name": "[parameters('containerapps_ca_tck_orleans_silo_name')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]"
+            ],
+            "kind": "containerapps",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "environmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironments_cae_the_code_kitchen_name'))]",
+                "workloadProfileName": "Consumption",
+                "configuration": {
+                    "secrets": [
+                        {
+                            "name": "connection-strings--azure-storage"
+                        },
+                        {
+                            "name": "connection-strings--event-hub-namespace"
+                        },
+                        {
+                            "name": "connection-strings--azure-signal-r"
+                        }
+                    ],
+                    "activeRevisionsMode": "Single",
+                    "ingress": {
+                        "external": true,
+                        "targetPort": 8080,
+                        "exposedPort": 0,
+                        "transport": "Auto",
+                        "traffic": [
+                            {
+                                "weight": 100,
+                                "latestRevision": true
+                            }
+                        ],
+                        "allowInsecure": false,
+                        "clientCertificateMode": "Ignore",
+                        "stickySessions": {
+                            "affinity": "none"
+                        }
+                    },
+                    "registries": [
+                        {
+                            "server": "crthecodekitchen.azurecr.io",
+                            "identity": "system-environment"
+                        }
+                    ],
+                    "identitySettings": [],
+                    "runtime": {
+                        "dotnet": {
+                            "autoConfigureDataProtection": false
+                        }
+                    },
+                    "maxInactiveRevisions": 100
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "[concat('crthecodekitchen.azurecr.io/', parameters('containerapps_ca_tck_orleans_silo_name'), ':138')]",
+                            "imageType": "ContainerImage",
+                            "name": "[parameters('containerapps_ca_tck_orleans_silo_name')]",
+                            "env": [
+                                {
+                                    "name": "ConnectionStrings__AzureStorage",
+                                    "secretRef": "connection-strings--azure-storage"
+                                },
+                                {
+                                    "name": "ConnectionStrings__EventHubNamespace",
+                                    "secretRef": "connection-strings--event-hub-namespace"
+                                },
+                                {
+                                    "name": "ConnectionStrings__AzureSignalR",
+                                    "secretRef": "connection-strings--azure-signal-r"
+                                }
+                            ],
+                            "resources": {
+                                "cpu": 0.25,
+                                "memory": "0.5Gi"
+                            },
+                            "probes": []
+                        }
+                    ],
+                    "scale": {
+                        "minReplicas": 1,
+                        "maxReplicas": 10,
+                        "cooldownPeriod": 300,
+                        "pollingInterval": 30,
+                        "rules": [
+                            {
+                                "name": "cpu-scaler",
+                                "custom": {
+                                    "type": "cpu",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "memory-scaler",
+                                "custom": {
+                                    "type": "memory",
+                                    "metadata": {
+                                        "type": "Utilization",
+                                        "value": "60"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "grain-count-scaler",
+                                "custom": {
+                                    "type": "external",
+                                    "metadata": {
+                                        "AverageGrainCountPerSilo": "750",
+                                        "SiloNameFilter": "[parameters('containerapps_ca_tck_orleans_silo_name')]",
+                                        "scalerAddress": "ca-tck-orleans-scaler.internal.proudbeach-fbb36fdd.westeurope.azurecontainerapps.io:80"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "volumes": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('registries_crthecodekitchen_name'), '/_repositories_admin')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registries_crthecodekitchen_name'))]"
+            ],
+            "properties": {
+                "description": "Can perform all read, write and delete operations on the registry",
+                "actions": [
+                    "repositories/*/metadata/read",
+                    "repositories/*/metadata/write",
+                    "repositories/*/content/read",
+                    "repositories/*/content/write",
+                    "repositories/*/content/delete"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('registries_crthecodekitchen_name'), '/_repositories_pull')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registries_crthecodekitchen_name'))]"
+            ],
+            "properties": {
+                "description": "Can pull any repository of the registry",
+                "actions": [
+                    "repositories/*/content/read"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('registries_crthecodekitchen_name'), '/_repositories_pull_metadata_read')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registries_crthecodekitchen_name'))]"
+            ],
+            "properties": {
+                "description": "Can perform all read operations on the registry",
+                "actions": [
+                    "repositories/*/content/read",
+                    "repositories/*/metadata/read"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('registries_crthecodekitchen_name'), '/_repositories_push')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registries_crthecodekitchen_name'))]"
+            ],
+            "properties": {
+                "description": "Can push to any repository of the registry",
+                "actions": [
+                    "repositories/*/content/read",
+                    "repositories/*/content/write"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
+            "apiVersion": "2025-05-01-preview",
+            "name": "[concat(parameters('registries_crthecodekitchen_name'), '/_repositories_push_metadata_write')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registries_crthecodekitchen_name'))]"
+            ],
+            "properties": {
+                "description": "Can perform all read and write operations on the registry",
+                "actions": [
+                    "repositories/*/metadata/read",
+                    "repositories/*/metadata/write",
+                    "repositories/*/content/read",
+                    "repositories/*/content/write"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/authorizationrules",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_evhns_the_code_kitchen_name'), '/RootManageSharedAccessKey')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_evhns_the_code_kitchen_name'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Manage",
+                    "Send"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_evhns_the_code_kitchen_name'), '/evh-the-code-kitchen')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_evhns_the_code_kitchen_name'))]"
+            ],
+            "properties": {
+                "messageTimestampDescription": {
+                    "timestampType": "LogAppend"
+                },
+                "retentionDescription": {
+                    "cleanupPolicy": "Delete",
+                    "retentionTimeInHours": 1
+                },
+                "messageRetentionInDays": 1,
+                "partitionCount": 32,
+                "status": "Active"
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/networkrulesets",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_evhns_the_code_kitchen_name'), '/default')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_evhns_the_code_kitchen_name'))]"
+            ],
+            "properties": {
+                "publicNetworkAccess": "Enabled",
+                "defaultAction": "Allow",
+                "virtualNetworkRules": [],
+                "ipRules": [],
+                "trustedServiceAccessEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stthecodekitchen_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stthecodekitchen_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "allowPermanentDelete": false,
+                    "enabled": true,
+                    "days": 7
+                },
+                "containerDeleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stthecodekitchen_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stthecodekitchen_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "protocolSettings": {
+                    "smb": {}
+                },
+                "cors": {
+                    "corsRules": []
+                },
+                "shareDeleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/queueServices",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stthecodekitchen_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stthecodekitchen_name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/tableServices",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stthecodekitchen_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stthecodekitchen_name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_evhns_the_code_kitchen_name'), '/evh-the-code-kitchen/$Default')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('namespaces_evhns_the_code_kitchen_name'), 'evh-the-code-kitchen')]",
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_evhns_the_code_kitchen_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stthecodekitchen_name'), '/default/the-code-kitchen')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_stthecodekitchen_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stthecodekitchen_name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/tableServices/tables",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stthecodekitchen_name'), '/default/PubSubStore')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/tableServices', parameters('storageAccounts_stthecodekitchen_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stthecodekitchen_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/tableServices/tables",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stthecodekitchen_name'), '/default/TheCodeKitchenClustering')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/tableServices', parameters('storageAccounts_stthecodekitchen_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stthecodekitchen_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/tableServices/tables",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stthecodekitchen_name'), '/default/TheCodeKitchenEventHubCheckpoints')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/tableServices', parameters('storageAccounts_stthecodekitchen_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stthecodekitchen_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/tableServices/tables",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stthecodekitchen_name'), '/default/TheCodeKitchenReminders')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/tableServices', parameters('storageAccounts_stthecodekitchen_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stthecodekitchen_name'))]"
+            ],
+            "properties": {}
+        }
+    ]
+}

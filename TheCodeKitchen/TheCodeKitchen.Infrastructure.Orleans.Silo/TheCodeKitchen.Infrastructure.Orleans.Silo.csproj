@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-TheCodeKitchen.Infrastructure.Orleans-4b37af0c-56f9-459b-8e74-beea02669699</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.2"/>
+        <PackageReference Include="Microsoft.Orleans.Server" Version="9.2.1" />
+        <PackageReference Include="OrleansDashboard" Version="8.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TheCodeKitchen.Application.Business\TheCodeKitchen.Application.Business.csproj" />
+      <ProjectReference Include="..\TheCodeKitchen.Infrastructure.AzureSignalR\TheCodeKitchen.Infrastructure.AzureSignalR.csproj" />
+      <ProjectReference Include="..\TheCodeKitchen.Infrastructure.Logging.Serilog\TheCodeKitchen.Infrastructure.Logging.Serilog.csproj" />
+      <ProjectReference Include="..\TheCodeKitchen.Infrastructure.Orleans\TheCodeKitchen.Infrastructure.Orleans.csproj" />
+      <ProjectReference Include="..\TheCodeKitchen.Infrastructure\TheCodeKitchen.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+</Project>

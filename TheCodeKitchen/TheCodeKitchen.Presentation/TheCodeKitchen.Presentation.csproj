@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TheCodeKitchen.Application.Contracts\TheCodeKitchen.Application.Contracts.csproj" />
+    <ProjectReference Include="..\TheCodeKitchen.Infrastructure.Logging.Serilog\TheCodeKitchen.Infrastructure.Logging.Serilog.csproj" />
+    <ProjectReference Include="..\TheCodeKitchen.Infrastructure.Orleans.Client\TheCodeKitchen.Infrastructure.Orleans.Client.csproj" />
+    <ProjectReference Include="..\TheCodeKitchen.Infrastructure\TheCodeKitchen.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

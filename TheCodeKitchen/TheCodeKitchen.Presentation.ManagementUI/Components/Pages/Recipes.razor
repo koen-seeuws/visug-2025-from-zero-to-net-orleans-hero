@@ -1,0 +1,73 @@
+@page "/recipes"
+
+<PageTitle>Recipes</PageTitle>
+
+<MudText Typo="Typo.h3" Class="mb-3">Recipes</MudText>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@CreateRecipe" Class="mb-3">
+    <MudIcon Icon="@Icons.Material.Filled.Add"/>
+    Create Recipe
+</MudButton>
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+}
+else if (GetRecipeResponses is null)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+}
+else if (GetRecipeResponses.Count <= 0)
+{
+    <MudAlert Severity="Severity.Info">No recipes were found! Keep in mind that you need to configure recipes in order to be able to play the game.</MudAlert>
+} else
+{
+    <MudExpansionPanels MultiExpansion="true">
+        @foreach (var recipe in GetRecipeResponses)
+        {
+            <MudExpansionPanel>
+                <TitleContent>
+                    <MudText Typo="Typo.h4">@recipe.Name</MudText>
+                </TitleContent>
+                <ChildContent>
+                    @if (recipe.Steps.Any())
+                    {
+                        <MudText Typo="Typo.h5" Class="mb-3">Steps</MudText>
+                    }
+                    <ul class="ms-5">
+                        @foreach (var (step, number) in recipe.Steps.Select((step, index) => (step, index + 1)))
+                        {
+                            <li>
+                                <MudText Typo="Typo.body1" Class="mb-3">
+                                    Step @number: @step.EquipmentType for @step.Time
+                                </MudText>
+                            </li>
+                        }
+                    </ul>
+                    <MudText Typo="Typo.h5" Class="mb-3">Ingredients</MudText>
+                    <ul class="ms-5">
+                        @foreach (var ingredient in recipe.Ingredients)
+                        {
+                            <li>
+                                <MudText Typo="Typo.h6" Class="mb-3">
+                                    @ingredient.Name
+                                </MudText>
+                                <ul class="ms-10">
+                                    @foreach (var (step, number) in ingredient.Steps.Select((step, index) => (step, index + 1)))
+                                    {
+                                        <li>
+                                            <MudText Typo="Typo.body1" Class="mb-3">
+                                                Step @number: @step.EquipmentType for @step.Time
+                                            </MudText>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </ChildContent>
+            </MudExpansionPanel>
+        }
+    </MudExpansionPanels>
+}
+

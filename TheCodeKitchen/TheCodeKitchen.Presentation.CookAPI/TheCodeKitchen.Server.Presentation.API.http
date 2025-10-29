@@ -1,0 +1,6 @@
+@TheCodeKitchen.Presentation.API_HostAddress = http://localhost:5169
+
+GET {{TheCodeKitchen.Presentation.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

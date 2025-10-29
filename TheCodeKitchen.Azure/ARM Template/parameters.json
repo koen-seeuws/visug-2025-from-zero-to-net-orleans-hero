@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerapps_ca_tck_cook_api_name": {
+            "value": null
+        },
+        "containerapps_ca_tck_orleans_silo_name": {
+            "value": null
+        },
+        "containerapps_ca_tck_management_ui_name": {
+            "value": null
+        },
+        "containerapps_ca_tck_management_api_name": {
+            "value": null
+        },
+        "containerapps_ca_tck_orleans_scaler_name": {
+            "value": null
+        },
+        "storageAccounts_stthecodekitchen_name": {
+            "value": null
+        },
+        "namespaces_evhns_the_code_kitchen_name": {
+            "value": null
+        },
+        "managedEnvironments_cae_the_code_kitchen_name": {
+            "value": null
+        },
+        "SignalR_sigr_the_code_kitchen_name": {
+            "value": null
+        },
+        "registries_crthecodekitchen_name": {
+            "value": null
+        }
+    }
+}

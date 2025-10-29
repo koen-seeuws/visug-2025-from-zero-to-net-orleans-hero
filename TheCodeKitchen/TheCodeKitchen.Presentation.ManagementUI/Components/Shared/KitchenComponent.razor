@@ -1,0 +1,82 @@
+<MudText Typo="Typo.h4" Class="mb-3">@Kitchen.Name</MudText>
+
+@if (string.IsNullOrWhiteSpace(Kitchen.Code))
+{
+    <MudText Typo="Typo.body1" Class="mb-3">Code: @Kitchen.Code</MudText>
+}
+
+<MudText Typo="Typo.body1" Class="mb-3">Rating: @((Kitchen.Rating * 100).ToString("F2"))%</MudText>
+
+<MudGrid>
+    <MudItem xs="12" xl="6">
+        <MudText Typo="Typo.h5" Class="mb-3">Messages</MudText>
+
+        @if (!string.IsNullOrWhiteSpace(KitchenConnectionErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error">@KitchenConnectionErrorMessage</MudAlert>
+        }
+        else if (_kitchenHubConnection is null)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+        }
+        else if (Messages.Count == 0)
+        {
+            <MudAlert Severity="Severity.Info">No messages, you guys should communicate a little more!</MudAlert>
+        }
+        else
+        {
+            <div id="kitchen-@Kitchen.Id-messages" class="h-100 d-flex flex-column gap-3 mb-3" style="max-height: calc(100vh - 256px); overflow-y: auto;">
+                @foreach (var message in Messages)
+                {
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">@message.From to @(message.To ?? "everyone")</MudText>
+                            <MudText Typo="Typo.body1">@message.Content</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            </div>
+        }
+    </MudItem>
+    <MudItem xs="12" xl="6">
+        <MudText Typo="Typo.h5" Class="mb-3">
+            Orders
+            @if (KitchenOrders is not null)
+            {
+                <text>(@KitchenOrders.Count)</text>
+            }
+        </MudText>
+
+        @if (!string.IsNullOrWhiteSpace(KitchenOrdersErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error">@KitchenOrdersErrorMessage</MudAlert>
+        }
+        else if (KitchenOrders is null)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+        }
+        else if (KitchenOrders.Count == 0)
+        {
+            <MudAlert Severity="Severity.Info">No orders yet</MudAlert>
+        }
+        else
+        {
+            <div id="kitchen-@Kitchen.Id-orders" class="h-100" style="max-height: calc(100vh - 256px); overflow-y: auto;">
+                <MudGrid Justify="Justify.Center" Spacing="3">
+                    @{
+                        var xl = 0;
+                        if (KitchenOrders.Count >= 2)
+                            xl = 6;
+
+                        foreach (var kitchenOrder in KitchenOrders)
+                        {
+                            <MudItem xs="12" xl="@xl">
+                                <KitchenOrderComponent KitchenOrder="@kitchenOrder"/>
+                            </MudItem>
+                        }
+                    }
+                </MudGrid>
+            </div>
+        }
+    </MudItem>
+</MudGrid>

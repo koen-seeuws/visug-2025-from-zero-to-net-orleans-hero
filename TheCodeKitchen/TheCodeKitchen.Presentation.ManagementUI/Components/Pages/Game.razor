@@ -1,0 +1,101 @@
+@page "/games/{gameId:guid}"
+@using TheCodeKitchen.Presentation.ManagementUI.Components.Shared
+
+<PageTitle>Game</PageTitle>
+
+@if (!string.IsNullOrWhiteSpace(GameErrorMessage))
+{
+    <MudAlert Severity="Severity.Error">@GameErrorMessage</MudAlert>
+}
+else if (GetGameResponse is null)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+}
+else
+{
+    <MudText Typo="Typo.h3" Class="mb-3">@GetGameResponse.Name - @TimePassed</MudText>
+
+    if (GetGameResponse.Started is null)
+    {
+        <MudAlert Severity="Severity.Info">The game has not yet started.</MudAlert>
+    }
+
+    <MudButton OnClick="@PauseOrUnpauseGame"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(Paused is null || GetGameResponse.Started is null || Busy)"
+               Class="mb-3">
+        @if (Paused == true)
+        {
+            <MudIcon Icon="@Icons.Material.Filled.PlayArrow"/>
+            <span>Play</span>
+        }
+        else
+        {
+            <MudIcon Icon="@Icons.Material.Filled.Pause"/>
+            <span>Pause</span>
+        }
+    </MudButton>
+    <MudButton OnClick="@NextMoment"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(Paused == false || GetGameResponse.Started is null || Busy)"
+               Class="mb-3">
+        <MudIcon Icon="@Icons.Material.Filled.NextPlan"/>
+        Advance
+    </MudButton>
+    <MudButton OnClick="@GenerateOrder"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(GetGameResponse.Started is null || Busy)"
+               Class="mb-3">
+        <MudIcon Icon="@Icons.Material.Filled.Checklist"/>
+        Generate Order
+    </MudButton>
+    <MudButton OnClick="@Update"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(Paused == false || GetGameResponse.Started is null || Busy)"
+               Class="mb-3">
+        <MudIcon Icon="@Icons.Material.Filled.Edit"/>
+        Edit
+    </MudButton>
+    <MudButton OnClick="@Reset"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(Paused == false || GetGameResponse.Started is null || Busy)"
+               Class="mb-3">
+        <MudIcon Icon="@Icons.Material.Filled.RestartAlt"/>
+        Reset
+    </MudButton>
+
+    if (!string.IsNullOrWhiteSpace(KitchenErrorMessage))
+    {
+        <MudAlert Severity="Severity.Error">@KitchenErrorMessage</MudAlert>
+    }
+    else if (Kitchens is null)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+    }
+    else
+    {
+        <MudGrid Spacing="3">
+            @{
+                var md = 0;
+                if (Kitchens.Count >= 2)
+                    md = 6;
+
+                var xl = 0;
+                if (Kitchens.Count >= 3)
+                    xl = 4;
+
+                foreach (var kitchen in Kitchens)
+                {
+                    <MudItem xs="12" md="@md" xl="@xl">
+                        <KitchenComponent Kitchen="@kitchen"/>
+                    </MudItem>
+                }
+            }
+        </MudGrid>
+    }
+}
